@@ -1,0 +1,42 @@
+[
+  {
+    "user": "0xd85a2abf44825f27968a20b6580f457f9ef33961",
+    "balance": "200",
+    "isContract": false
+  },
+  {
+    "user": "0x952073b40ee69d6665c87b1fa36c5069ba5405fa",
+    "balance": "34.000000000000000319",
+    "isContract": false
+  },
+  {
+    "user": "0x4110cafd29c8535c7a39862c8d4eee72277bf1ef",
+    "balance": "4.17829471992933491",
+    "isContract": false
+  },
+  {
+    "user": "0x1525d8fcad680088245055ffb43179367d3effc0",
+    "balance": "2.004481385312510347",
+    "isContract": false
+  },
+  {
+    "user": "0x000755fbe4a24d7478bfcfc1e561afce82d1ff62",
+    "balance": "2",
+    "isContract": false
+  },
+  {
+    "user": "0x7abf12bb3d0fdbf30b3d2c844df18e4d4da5a702",
+    "balance": "0.43",
+    "isContract": false
+  },
+  {
+    "user": "0x860b7abd16672b33bab84679526227adb283ed8f",
+    "balance": "0.2",
+    "isContract": false
+  },
+  {
+    "user": "0xe7643837a237ba6b1f4144d3a029cc1d3d14d06e",
+    "balance": "0.15850008098265842",
+    "isContract": false
+  }
+]

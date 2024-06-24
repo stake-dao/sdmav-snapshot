@@ -1,0 +1,22 @@
+{
+  "name": "sdmav-snapshot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/stake-dao/sdmav-snapshot.git",
+  "author": "Marsot Pierre <pierre.mmarsot@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "npx ts-node main.ts"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "lodash": "^4.17.21",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "viem": "^2.13.2"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.4",
+    "@types/node": "^20.12.12"
+  }
+}
