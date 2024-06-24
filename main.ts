@@ -29,6 +29,12 @@ const ZKSYNC_BLOCK_SNAPSHOT = 35761590;
 const SDMAV_ZKSYNC_ADDRESS = "0x8E6d4c0088b5B41BdDb126f355Ef278Ac5B5974C";
 const ZKSYNCSCAN_API_KEY = "7913R1BXT5T33X2M6EI15TRNTRI84HA1VD";
 
+// Amounts
+const BSC_AMOUNT = "4629.737331900000239616";
+const MAINNET_AMOUNT = "1513309.05179999998836736";
+const BASE_AMOUNT = "5096.97"; // 5663.3 minus 10%
+const ZKSYNC_AMOUNT = "25248.069"; // 28053.41 minus 10%
+
 const INCREMENT = BigInt(50000);
 
 interface ExplorerTransfer {
@@ -63,11 +69,19 @@ const fetchTransfersFromExplorer = async (explorerUrl: string, apiKey: string, t
     }
 }
 
-const createMerkle = (chain: Chain, users: UserBalance[]): any => {
+const createMerkle = (chain: Chain, users: UserBalance[], airdropAmountStr: string): any => {
+    const airdropAmount = parseEther(airdropAmountStr);
+    const totalUserBalance = users.reduce((acc: bigint, user) => acc + parseEther(user.balance), BigInt(0));
+
     const elements: any[] = [];
+    let total = BigInt(0);
+
     for (let i = 0; i < users.length; i++) {
         const userAddress = users[i].user.toLowerCase() as `0x${string}`;
-        const amount = parseEther(users[i].balance);
+        const userBalance = parseEther(users[i].balance);
+
+        const amount = userBalance * airdropAmount / totalUserBalance;
+        total += amount;
         elements.push(keccak256(encodePacked(["uint256", "address", "uint256"], [BigInt(i), userAddress, amount])));
     }
 
@@ -76,10 +90,13 @@ const createMerkle = (chain: Chain, users: UserBalance[]): any => {
     const merkle: any = {};
     for (let i = 0; i < users.length; i++) {
         const userAddress = users[i].user.toLowerCase();
+        const userBalance = parseEther(users[i].balance);
+
+        const amount = userBalance * airdropAmount / totalUserBalance;
 
         merkle[userAddress.toLowerCase()] = {
             index: i,
-            amount: formatUnits(parseEther(users[i].balance), 0),
+            amount: formatUnits(amount, 0),
             proof: merkleTree.getHexProof(elements[i]),
         };
     }
@@ -87,6 +104,33 @@ const createMerkle = (chain: Chain, users: UserBalance[]): any => {
     fs.writeFileSync(`./merkles/${chain.id}.json`, JSON.stringify({
         "merkle": merkle,
         root: merkleTree.getHexRoot(),
+        "total": formatUnits(total, 18),
+    }, null, 2));
+}
+
+const createDistributionFile = (chain: Chain, users: UserBalance[], airdropAmountStr: string): any => {
+    const airdropAmount = parseEther(airdropAmountStr);
+    const totalUserBalance = users.reduce((acc: bigint, user) => acc + parseEther(user.balance), BigInt(0));
+
+    const elements: any[] = [];
+    let total = BigInt(0);
+
+    for (let i = 0; i < users.length; i++) {
+        const userAddress = users[i].user.toLowerCase() as `0x${string}`;
+        const userBalance = parseEther(users[i].balance);
+
+        const amount = userBalance * airdropAmount / totalUserBalance;
+        total += amount;
+        elements.push({
+            user: userAddress,
+            amount: amount.toString(),
+            rawAmount: formatUnits(amount, 18)
+        });
+    }
+
+    fs.writeFileSync(`./distributions/${chain.id}.json`, JSON.stringify({
+        "users": elements,
+        "total": formatUnits(total, 18),
     }, null, 2));
 }
 
@@ -161,7 +205,7 @@ const main = async () => {
         "https://eth-mainnet.g.alchemy.com/v2/kKOp_PsmE4UxfO9oIk4evDqupfYOXgej"
     );
 
-    createMerkle(mainnet, users);
+    createMerkle(mainnet, users, MAINNET_AMOUNT);
 
     // BSC
     users = await fetch(
@@ -174,10 +218,10 @@ const main = async () => {
         "https://lb.drpc.org/ogrpc?network=bsc&dkey=Ak80gSCleU1Frwnafb5Ka4VtAXxDLhcR76MthkHL9tz4"
     );
 
-    createMerkle(bsc, users);
+    createMerkle(bsc, users, BSC_AMOUNT);
 
     // Base
-    await fetch(
+    users = await fetch(
         SDMAV_BASE_BLOCK_CREATED,
         BASE_BLOCK_SNAPSHOT,
         "https://api.basescan.org",
@@ -187,8 +231,10 @@ const main = async () => {
         "https://base-mainnet.g.alchemy.com/v2/kKOp_PsmE4UxfO9oIk4evDqupfYOXgej"
     );
 
+    await createDistributionFile(base, users, BASE_AMOUNT);
+
     // ZKSync
-    await fetch(
+    users = await fetch(
         SDMAV_ZKSYNC_BLOCK_CREATED,
         ZKSYNC_BLOCK_SNAPSHOT,
         "https://api-era.zksync.network",
@@ -197,6 +243,8 @@ const main = async () => {
         zkSync,
         "https://zksync-mainnet.g.alchemy.com/v2/kKOp_PsmE4UxfO9oIk4evDqupfYOXgej"
     );
+
+    await createDistributionFile(zkSync, users, ZKSYNC_AMOUNT);
 };
 
 main();
