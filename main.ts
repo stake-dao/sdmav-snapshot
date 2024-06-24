@@ -1,7 +1,9 @@
 import axios from "axios";
-import { Chain, createPublicClient, erc20Abi, formatUnits, http } from "viem";
+import { Chain, createPublicClient, erc20Abi, formatUnits, http, parseEther } from "viem";
 import { base, bsc, mainnet, zkSync } from "viem/chains";
 import fs from 'fs';
+import { encodePacked, keccak256 } from 'viem';
+import { MerkleTree } from 'merkletreejs';
 
 // Mainnet
 const SDMAV_GAUGE_BLOCK_CREATED = 18270352;
@@ -34,9 +36,10 @@ interface ExplorerTransfer {
     topics: string[];
 }
 
-const getBlockNumberFromTimestamp = async (chain: string, timestamp: bigint): Promise<number> => {
-    const { data: resp } = await axios.get(`https://coins.llama.fi/block/${chain}/${timestamp}`);
-    return resp.height;
+interface UserBalance {
+    user: `0x${string}`;
+    balance: string;
+    isContract: boolean;
 }
 
 const fetchTransfersFromExplorer = async (explorerUrl: string, apiKey: string, tokenAddress: string, fromBlock: bigint, toBlock: bigint): Promise<ExplorerTransfer[]> => {
@@ -60,7 +63,34 @@ const fetchTransfersFromExplorer = async (explorerUrl: string, apiKey: string, t
     }
 }
 
-const fetch = async (startBlockNumber: number, snapshotBlock: number, explorerUrl: string, exploreApiKey: string, tokenAddress: string, chain: Chain, rpcUrl: string) => {
+const createMerkle = (chain: Chain, users: UserBalance[]): any => {
+    const elements: any[] = [];
+    for (let i = 0; i < users.length; i++) {
+        const userAddress = users[i].user.toLowerCase() as `0x${string}`;
+        const amount = parseEther(users[i].balance);
+        elements.push(keccak256(encodePacked(["uint256", "address", "uint256"], [BigInt(i), userAddress, amount])));
+    }
+
+    const merkleTree = new MerkleTree(elements, keccak256, { sort: true });
+
+    const merkle: any = {};
+    for (let i = 0; i < users.length; i++) {
+        const userAddress = users[i].user.toLowerCase();
+
+        merkle[userAddress.toLowerCase()] = {
+            index: i,
+            amount: formatUnits(parseEther(users[i].balance), 0),
+            proof: merkleTree.getHexProof(elements[i]),
+        };
+    }
+
+    fs.writeFileSync(`./merkles/${chain.id}.json`, JSON.stringify({
+        "merkle": merkle,
+        root: merkleTree.getHexRoot(),
+    }, null, 2));
+}
+
+const fetch = async (startBlockNumber: number, snapshotBlock: number, explorerUrl: string, exploreApiKey: string, tokenAddress: string, chain: Chain, rpcUrl: string): Promise<UserBalance[]> => {
 
     let startBlock = BigInt(startBlockNumber);
     let users: Record<`0x${string}`, boolean> = {};
@@ -97,7 +127,7 @@ const fetch = async (startBlockNumber: number, snapshotBlock: number, explorerUr
         blockNumber: BigInt(snapshotBlock)
     });
 
-    const userBalances: any[] = [];
+    const userBalances: UserBalance[] = [];
     for (const user of usersAddresses) {
         const bytecode = await publicClient.getCode({
             address: user as `0x${string}`,
@@ -107,19 +137,21 @@ const fetch = async (startBlockNumber: number, snapshotBlock: number, explorerUr
         const balance = responses.shift()?.result as bigint;
         if (balance > BigInt(0)) {
             userBalances.push({
-                user,
+                user: user as `0x${string}`,
                 balance: formatUnits(balance, 18),
                 isContract
             });
         }
     }
 
-    fs.writeFileSync(`./snapshots/sdmav-${chain.id}.json`, JSON.stringify(userBalances.sort((a, b) => b.balance - a.balance), null, 2));
+    fs.writeFileSync(`./snapshots/sdmav-${chain.id}.json`, JSON.stringify(userBalances.sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance)), null, 2));
+
+    return userBalances;
 };
 
 const main = async () => {
     // Mainnet
-    /*await fetch(
+    let users = await fetch(
         SDMAV_GAUGE_BLOCK_CREATED,
         MAINNET_BLOCK_SNAPSHOT,
         "https://api.etherscan.io",
@@ -129,8 +161,10 @@ const main = async () => {
         "https://eth-mainnet.g.alchemy.com/v2/kKOp_PsmE4UxfO9oIk4evDqupfYOXgej"
     );
 
+    createMerkle(mainnet, users);
+
     // BSC
-    await fetch(
+    users = await fetch(
         SDMAV_BSC_BLOCK_CREATED,
         BSC_BLOCK_SNAPSHOT,
         "https://api.bscscan.com",
@@ -138,8 +172,9 @@ const main = async () => {
         SDMAV_BSC_ADDRESS,
         bsc,
         "https://lb.drpc.org/ogrpc?network=bsc&dkey=Ak80gSCleU1Frwnafb5Ka4VtAXxDLhcR76MthkHL9tz4"
-    );*/
+    );
 
+    createMerkle(bsc, users);
 
     // Base
     await fetch(
