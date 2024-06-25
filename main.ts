@@ -7,8 +7,10 @@ import { MerkleTree } from 'merkletreejs';
 
 // Mainnet
 const SDMAV_GAUGE_BLOCK_CREATED = 18270352;
+const SDMAV_BLOCK_CREATED = 18191347;
 const MAINNET_BLOCK_SNAPSHOT = 20021902;
 const SDMAV_GAUGE_MAINNET_ADDRESS = "0x5B75C60D45BfB053f91B5a9eAe22519DFaa37BB6";
+const SDMAV_MAINNET_ADDRESS = "0x50687515e93C43964733282F9DB8683F80BB02f9";
 const ETHERSCAN_API_KEY = "H5TBJYKQWNDDCVRM3SW35WWS2I1ERF1QW2";
 
 // Bsc
@@ -134,7 +136,7 @@ const createDistributionFile = (chain: Chain, users: UserBalance[], airdropAmoun
     }, null, 2));
 }
 
-const fetch = async (startBlockNumber: number, snapshotBlock: number, explorerUrl: string, exploreApiKey: string, tokenAddress: string, chain: Chain, rpcUrl: string): Promise<UserBalance[]> => {
+const fetch = async (startBlockNumber: number, snapshotBlock: number, explorerUrl: string, exploreApiKey: string, tokenAddress: string, chain: Chain, rpcUrl: string, suffixPath?: string): Promise<UserBalance[]> => {
 
     let startBlock = BigInt(startBlockNumber);
     let users: Record<`0x${string}`, boolean> = {};
@@ -188,13 +190,13 @@ const fetch = async (startBlockNumber: number, snapshotBlock: number, explorerUr
         }
     }
 
-    fs.writeFileSync(`./snapshots/sdmav-${chain.id}.json`, JSON.stringify(userBalances.sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance)), null, 2));
+    fs.writeFileSync(`./snapshots/sdmav-${chain.id}${suffixPath ? `-${suffixPath}` : ""}.json`, JSON.stringify(userBalances.sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance)), null, 2));
 
     return userBalances;
 };
 
 const main = async () => {
-    // Mainnet
+    // Mainnet sdma-gauge
     let users = await fetch(
         SDMAV_GAUGE_BLOCK_CREATED,
         MAINNET_BLOCK_SNAPSHOT,
@@ -202,10 +204,44 @@ const main = async () => {
         ETHERSCAN_API_KEY,
         SDMAV_GAUGE_MAINNET_ADDRESS,
         mainnet,
-        "https://eth-mainnet.g.alchemy.com/v2/kKOp_PsmE4UxfO9oIk4evDqupfYOXgej"
+        "https://eth-mainnet.g.alchemy.com/v2/kKOp_PsmE4UxfO9oIk4evDqupfYOXgej",
+        "sdmav-gauge"
     );
 
-    createMerkle(mainnet, users, MAINNET_AMOUNT);
+    let usersSdMav = await fetch(
+        SDMAV_BLOCK_CREATED,
+        MAINNET_BLOCK_SNAPSHOT,
+        "https://api.etherscan.io",
+        ETHERSCAN_API_KEY,
+        SDMAV_MAINNET_ADDRESS,
+        mainnet,
+        "https://eth-mainnet.g.alchemy.com/v2/kKOp_PsmE4UxfO9oIk4evDqupfYOXgej",
+        "sdmav"
+    );
+
+    // Remove all contracts
+    usersSdMav = usersSdMav.filter((user) => !user.isContract);
+
+    // Merge between sdmav-gauge and sdmav
+    const mainnetUsers = users;
+    for (const userSdMav of usersSdMav) {
+        let find = false;
+        for (const sdmavGauge of mainnetUsers) {
+            if (sdmavGauge.user.toLowerCase() === userSdMav.user.toLowerCase()) {
+                let balance = parseEther(sdmavGauge.balance);
+                balance += parseEther(userSdMav.balance);
+                sdmavGauge.balance = formatUnits(balance, 18);
+                find = true;
+                break
+            }
+        }
+
+        if(!find) {
+            mainnetUsers.push(userSdMav);
+        }
+    }
+
+    createMerkle(mainnet, mainnetUsers, MAINNET_AMOUNT);
 
     // BSC
     users = await fetch(

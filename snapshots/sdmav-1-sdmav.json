@@ -1,0 +1,182 @@
+[
+  {
+    "user": "0x5b75c60d45bfb053f91b5a9eae22519dfaa37bb6",
+    "balance": "1023873.141993079053252939",
+    "isContract": true
+  },
+  {
+    "user": "0x7f2fccaf717128bdf5efabd67a8ea9a812d5813e",
+    "balance": "17621.892739585659633664",
+    "isContract": false
+  },
+  {
+    "user": "0x10463ad648d59a3dadcef626dcec4197fd0b550f",
+    "balance": "15622.224455241881141337",
+    "isContract": true
+  },
+  {
+    "user": "0x042796806943301623f76c2f5f1ed311372e12df",
+    "balance": "4230.716680446414187931",
+    "isContract": false
+  },
+  {
+    "user": "0x5cfe3929f77b7fb71d77a9df6a828043c2123671",
+    "balance": "3403.255632199927817475",
+    "isContract": false
+  },
+  {
+    "user": "0x3ed364cdc2c4a32391a6c127fd7ae4721206d4cf",
+    "balance": "2236.45425191",
+    "isContract": false
+  },
+  {
+    "user": "0x17982917e5ca68e71e4c77cd562ca3b6769f9fff",
+    "balance": "1934.27164",
+    "isContract": false
+  },
+  {
+    "user": "0x487102f05490a4dceb6859c14626f7a1e149a956",
+    "balance": "1637.9871",
+    "isContract": false
+  },
+  {
+    "user": "0x7dcf4570a14755e2c7223fba365c04590d9291dc",
+    "balance": "1499.844983111320132833",
+    "isContract": false
+  },
+  {
+    "user": "0x4455cdbc92217f21904f1ccdcd2dbcb15ec5b896",
+    "balance": "1474.20536964",
+    "isContract": false
+  },
+  {
+    "user": "0x6f90c11e8a84a390450cd133b37372da8483afc8",
+    "balance": "1401.207711345102955687",
+    "isContract": false
+  },
+  {
+    "user": "0x203adabdde7beea2918f63e0890371430b6e40e9",
+    "balance": "1101.68730951",
+    "isContract": false
+  },
+  {
+    "user": "0x502a3e1d9a2b0da4cc82616ce012247efa5e66c8",
+    "balance": "953.126711429440465153",
+    "isContract": false
+  },
+  {
+    "user": "0xd82b1110fa125643ed1553eb0ca4e78fb96a475c",
+    "balance": "949.6908",
+    "isContract": false
+  },
+  {
+    "user": "0x95b42336b4abdc0497e78a97e4826125e3d6880e",
+    "balance": "751.589483520155713536",
+    "isContract": false
+  },
+  {
+    "user": "0x498b466366f1e7aeb992460a9981db2fb7a12a12",
+    "balance": "700.686113904072862669",
+    "isContract": false
+  },
+  {
+    "user": "0xc0d47ae3b0972b02abdd1bb168f32f162f26dd4b",
+    "balance": "677.050065492761661538",
+    "isContract": false
+  },
+  {
+    "user": "0x4b00a17a8a4c7dc2f71777207b1c1bd6c132d394",
+    "balance": "538",
+    "isContract": false
+  },
+  {
+    "user": "0x1f0d01f338244c193d2dc779dbc1cf3f1e93153c",
+    "balance": "537.634",
+    "isContract": false
+  },
+  {
+    "user": "0x157c359e638b52f3045243b483501069cdddf6d2",
+    "balance": "514.398771373912449917",
+    "isContract": false
+  },
+  {
+    "user": "0x878d0320075af41bd18901c0ba2698da2870668c",
+    "balance": "362.56",
+    "isContract": false
+  },
+  {
+    "user": "0xe999c4e9c546c76a094c2a053269410110b220f7",
+    "balance": "347.201087747906147228",
+    "isContract": false
+  },
+  {
+    "user": "0xb988fcec45c6f5b3183b85a0610a9fd92a802e50",
+    "balance": "300",
+    "isContract": false
+  },
+  {
+    "user": "0x9fefb95ab189e715d5962dc69ae804f36d522cff",
+    "balance": "297.20139251",
+    "isContract": false
+  },
+  {
+    "user": "0xa68df02aacd5097d596f1080b007e0a5aaa5156d",
+    "balance": "250.304621883414020096",
+    "isContract": false
+  },
+  {
+    "user": "0x40f81795f44b96bf88e16e055f2283b9caed9466",
+    "balance": "213.576693810956222528",
+    "isContract": false
+  },
+  {
+    "user": "0xf930ebbd05ef8b25b1797b9b2109ddc9b0d43063",
+    "balance": "143.166543924724579793",
+    "isContract": true
+  },
+  {
+    "user": "0x4914224a78c97f885308ac546d660e000cbca28f",
+    "balance": "143",
+    "isContract": false
+  },
+  {
+    "user": "0xf62a267a6831d3612a22ec108d2f2bb41e01cace",
+    "balance": "123.031683483719685036",
+    "isContract": false
+  },
+  {
+    "user": "0xb0d2997eb52ae37fa745857582d290d3eaab79e3",
+    "balance": "29.534047540247464662",
+    "isContract": false
+  },
+  {
+    "user": "0xf10a1a66f1b9c8a180ccee398f8357bf68509429",
+    "balance": "10",
+    "isContract": false
+  },
+  {
+    "user": "0x000755fbe4a24d7478bfcfc1e561afce82d1ff62",
+    "balance": "1",
+    "isContract": false
+  },
+  {
+    "user": "0x0000000a3fc396b89e4c11841b39d9dff85a5d05",
+    "balance": "1",
+    "isContract": true
+  },
+  {
+    "user": "0x544f96434f77437425d5ac40fd4755c0cf39399a",
+    "balance": "0.489679447652749958",
+    "isContract": false
+  },
+  {
+    "user": "0x5df9f7c9a4f82d01da13f413b5dc7218906a5edc",
+    "balance": "0.008112163309062445",
+    "isContract": false
+  },
+  {
+    "user": "0xf749b8b8248ff4a4f50b53ab480b7ef6ff6dc978",
+    "balance": "0.001036000000112837",
+    "isContract": false
+  }
+]
